@@ -37,7 +37,7 @@ class Login extends React.Component<any,any>{
     }
     submit=(e:any)=>{
         e.preventDefault();
-        Axios.post('http://localhost:8000/user/login',this.state.userDetails)
+        Axios.post(`${process.env.REACT_APP_API}user/login`,this.state.userDetails)
         .then(({data})=>{
             if(data.success){
                 localStorage.setItem('token',data.token)

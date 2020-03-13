@@ -1,5 +1,6 @@
 const io = require('./index.js').io
 const Stomp=require('stompit');
+const config=require('config');
 
 const connectOptions = {
 	  'host': 'b-1b0765e1-971b-403c-a003-742240f2bfc9-1.mq.ap-south-1.amazonaws.com',
@@ -7,8 +8,8 @@ const connectOptions = {
 	  'ssl':true,
 	  'connectHeaders':{
 	    'host': '/',
-	    'login': 'Vikas',
-	    'passcode': 'Vikas_Suresh',
+	    'login': `${process.env.login}`,
+	    'passcode': `${process.env.password}`,
 	    'heart-beat': '5000,5000'
 	  }
 	};
@@ -50,8 +51,6 @@ module.exports=(socket)=>{
 		      console.log('subscribe error ' + error.message);
 		      return;
 		    }
-			
-			console.log(message)
 		    message.readString('utf-8', function(error, body) {
 			  
 		      if (error) {

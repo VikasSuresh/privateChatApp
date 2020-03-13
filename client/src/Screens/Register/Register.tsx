@@ -24,7 +24,7 @@ class Register extends React.Component<any,any>{
     }
     submit=(e:any)=>{
         e.preventDefault();
-        axios.post('http://localhost:8000/user/register',this.state.userDetails)
+        axios.post(`${process.env.REACT_APP_API}user/register`,this.state.userDetails)
         .then(({data})=>{
             if(data===true){
                 this.props.history.push('/login')

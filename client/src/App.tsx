@@ -14,5 +14,4 @@ const App=()=>(
    <Route/>
  </Router>
 )
-
 export default App;
