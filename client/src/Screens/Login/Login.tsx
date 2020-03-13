@@ -1,10 +1,22 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import Axios from "axios";
+import jwt from "jsonwebtoken";
+
 
 class Login extends React.Component<any,any>{
+    componentDidMount(){
+        let atrb:any=localStorage.getItem('token')
+        if(jwt.decode(atrb)){
+            this.props.history.push('/chat')
+        }
+    }
     state={
         userDetails:{
+            username:'',
+            password:''
+        },
+        err:{
             username:'',
             password:''
         }
@@ -27,8 +39,18 @@ class Login extends React.Component<any,any>{
         e.preventDefault();
         Axios.post('http://localhost:8000/user/login',this.state.userDetails)
         .then(({data})=>{
-            console.log(data)
-            this.props.history.push(`/chat/${data.name}/${data._id}`)
+            if(data.success){
+                localStorage.setItem('token',data.token)
+                this.props.history.push(`/chat/`)
+            }else{
+                this.setState((prevState:any)=>{
+                    return{
+                        ...prevState,
+                        err:data
+                    }
+                })
+            }
+            
         }).catch((err)=>{
             console.log(err)
         })
@@ -41,10 +63,12 @@ class Login extends React.Component<any,any>{
                         User Name
                     </label>
                     <input type='text' onChange={this.handleChange} name="username" /><br/>
+                    <div className="text-danger">{this.state.err.username}</div>
                     <label>
                        Password
                     </label>
                     <input type='password' onChange={this.handleChange} name="password" /><br/>
+                    <div className="text-danger">{this.state.err.password}</div>
                     <button type='submit'>Submit</button>
                     <div>
                         Dont have an Acc

@@ -1,9 +1,8 @@
 const mongoose=require('mongoose');
 
 const userMessage=new mongoose.Schema({
-    user:String,
+    id:String,
     chats:Array,
-    activeChat:Object
 })
 
 module.exports = mongoose.model('usermessage',userMessage)

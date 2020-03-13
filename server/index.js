@@ -15,7 +15,9 @@ mongoose.connect("mongodb://localhost:27017/test",{useNewUrlParser:true,useUnifi
     .catch(()=>{console.log('Error in Connecting to DB')})
 
 app.use('/user',require('./routes/user'));
-io.on('connection',require('./socketManager'))
+app.use(passport.initialize());
+require('./middleware/passport')(passport)
+io.on('connection',require('./socketManager copy'))
 
 
 http.listen('8000',()=>{
