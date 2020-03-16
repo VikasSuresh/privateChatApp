@@ -38,7 +38,7 @@ class Chat extends React.Component<any,any>{
         var retrievedObject:any = localStorage.getItem('token');
             retrievedObject=(jwt.decode(retrievedObject));
             if(retrievedObject!==null){
-                Axios.get(`http://localhost:8000/user/onMount/${retrievedObject.id}`).then(({data}:any)=>{
+                Axios.get(`${process.env.REACT_APP_API}user/onMount/${retrievedObject.id}`).then(({data}:any)=>{
                 if (data!==null && data!==""){
                     this.setState({
                         chats:data.data.chats,
@@ -79,6 +79,12 @@ class Chat extends React.Component<any,any>{
                 users:users
             })
         })
+        socket.on('disconnect',()=>{
+            socket.open()
+            this.setState({
+                socket:socket
+            })
+        })
         window.addEventListener('beforeunload',(e)=>{
             e.preventDefault();
             this.end()
@@ -92,7 +98,7 @@ class Chat extends React.Component<any,any>{
         })
    }
    end=()=>{
-    Axios.post('http://localhost:8000/user/onUnmount',{id:this.state.currUser.id ,chats:this.state.chats})
+    Axios.post(`${process.env.REACT_APP_API}user/onUnmount`,{id:this.state.currUser.id ,chats:this.state.chats})
     .then(()=>{
     }).catch((err)=>{
         console.log(err,"err")
