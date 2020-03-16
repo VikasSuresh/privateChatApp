@@ -28,7 +28,7 @@ class Chat extends React.Component<any,any>{
         sid:'',
         msg:''
     }],
-    socket:io.connect('http://localhost:8000')
+    socket:io.connect(process.env.REACT_APP_API)
    }
    componentWillUnmount(){
     
