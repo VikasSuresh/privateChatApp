@@ -80,10 +80,8 @@ class Chat extends React.Component<any,any>{
             })
         })
         socket.on('disconnect',()=>{
-            socket.open()
-            this.setState({
-                socket:socket
-            })
+            alert("Disconnected refresh to connect again")
+            window.location.reload()
         })
         window.addEventListener('beforeunload',(e)=>{
             e.preventDefault();

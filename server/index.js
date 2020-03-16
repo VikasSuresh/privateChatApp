@@ -10,7 +10,6 @@ const config=require('config');
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
-console.log(process.env)
 mongoose.connect(process.env.db||config.get('db'),{useNewUrlParser:true,useUnifiedTopology:true})
     .then(()=>{console.log('Connected to the DB')})
     .catch((err)=>{console.log('Error in Connecting to DB',err)})
