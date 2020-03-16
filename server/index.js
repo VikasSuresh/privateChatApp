@@ -21,6 +21,6 @@ require('./middleware/passport')(passport)
 io.on('connection',require('./socketManager copy'))
 
 
-http.listen('8000',()=>{
-    console.log('Connected to port 8000')
+http.listen(process.env.PORT||8000,()=>{
+    console.log(`Connected to port ${process.env.PORT||8000}`)
 })
