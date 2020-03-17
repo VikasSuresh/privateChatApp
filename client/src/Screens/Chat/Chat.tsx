@@ -97,7 +97,8 @@ class Chat extends React.Component<any,any>{
    }
    end=()=>{
     Axios.post(`${process.env.REACT_APP_API}user/onUnmount`,{id:this.state.currUser.id ,chats:this.state.chats})
-    .then(()=>{
+    .then(({data})=>{
+        console.log(data===true?"Logouted":"Some Prblem in Logging out")
     }).catch((err)=>{
         console.log(err,"err")
     })

@@ -84,6 +84,7 @@ router.post('/onUnmount',(req,res)=>{
                 // data.activeChat=req.body.activeChat
                 data.save().catch((err)=>console.log("error in saving into db2",err))
             }
+            res.send(true)
         }).catch((err)=>{
             console.log(err,'err')
         })

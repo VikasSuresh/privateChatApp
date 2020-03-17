@@ -56,6 +56,7 @@ class Login extends React.Component<any,any>{
         })
     }
     render(){
+        console.log(process.env.REACT_APP_API)
         return(
             <div>
                 <form onSubmit={this.submit}>
