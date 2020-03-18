@@ -55,11 +55,21 @@ router.post('/login',(req,res)=>{
                       jwt.sign({id:user._id,name:user.name},"secret",{
                         expiresIn: 31556926 // 1 year in seconds
                       },(err,token)=>{
-                          res.json({
-                              success:true,
-                              token: token
-                          })
-                      })
+                            userMessage.findById(user._id)
+                                .then(data=>{
+                                if(data===null){
+                                    var result= new userMessage({
+                                        _id:user._id,
+                                        chats:[]
+                                    })
+                                    result.save()
+                                }
+                            })
+                            res.cookie('token',token)
+                            res.json({
+                                success:true,
+                            })
+                    })
                   }else {
                     return res.json({ password: "Password incorrect" });
                   }
@@ -91,7 +101,7 @@ router.post('/onUnmount',(req,res)=>{
 
 })
 router.get('/onMount/:id',(req,res)=>{
-    userMessage.findOne({id:req.params.id})
+    userMessage.findOne({_id:req.params.id})
         .then(data=>{
             if(data!==null){
                 User.find().then(userData=>{

@@ -6,7 +6,7 @@ const Message=(props:any)=>(
 			<span>To: <span className="name">{props.rname}</span></span>
 		</div>
 		<div className="chat-container">
-			<ul className="chat-box chatContainerScroll">
+			<ul id='chat-box' className="chat-box chatContainerScroll">
 				{props.msgs}
 			</ul>
 		</div>

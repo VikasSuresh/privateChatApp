@@ -1,9 +1,11 @@
 import React from "react";
 import axios from "axios";
 import jwt from "jsonwebtoken";
+import { NavLink } from "react-router-dom";
+import cookie from "js-cookie";
 class Register extends React.Component<any,any>{
     componentDidMount(){
-        let atrb:any=localStorage.getItem('token')
+        let atrb:any=cookie.get('token')
         if(jwt.decode(atrb)){
             this.props.history.push('/chat')
         }
@@ -72,6 +74,12 @@ class Register extends React.Component<any,any>{
                     <button type="submit">
                         Submit
                     </button>
+                    <div>
+                        Have an Acc
+                    <NavLink to='/login'>
+                        Login    
+                    </NavLink>
+                    </div>
                 </form>
                
             </div>

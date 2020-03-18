@@ -1,8 +1,5 @@
 import React from "react";
 import "../../Styles/Chat.css";
-import { Link } from "react-router-dom";
-
-
 const SideBar =(props:any)=>(
         <div className="users-container">
             <div>
@@ -13,7 +10,7 @@ const SideBar =(props:any)=>(
             </div>
             <div className="chat-search-box">
                 <div className="input-group">
-                    <input className="form-control" placeholder="Search"/>
+                    <input className="form-control" type="text" onChange={props.handleSearchText} placeholder="Search"/>
                     <div className="input-group-btn">
                         <button type="button" className="btn btn-info">
                             Search
@@ -22,18 +19,15 @@ const SideBar =(props:any)=>(
                 </div>
             </div>
             <div>
-                Online :
-                <ul className="users">
-                    {props.users}
-                </ul>
-            </div>
-            <div>
-                Previous Chats:
                 <ul className="users">
                     {props.prevUsers}
                 </ul>
             </div>
-            
+            <div>
+                <ul className="users">
+                    {props.renderUser}
+                </ul>
+            </div>
       </div>
 )  
 export default SideBar;

@@ -1,6 +1,6 @@
 const io = require('./index.js').io
 const Stomp=require('stompit');
-const config=require('config');
+const userMessage=require('./models/userMessage')
 
 const connectOptions = {
 	  'host': 'b-1b0765e1-971b-403c-a003-742240f2bfc9-1.mq.ap-south-1.amazonaws.com',
@@ -41,46 +41,57 @@ module.exports=(socket)=>{
 
 	
 
-	socket.on('privateMessage',({rid,sid,msg})=>{
-		manager.connect((err,client,reconnect)=>{
-			if(err) throw new Error(err);
-			client.on('error',(err)=>{
-				reconnect();
-			})
-			const subscribeHeaders = {
-				'destination': 'test',
-				'ack': 'client-individual'
-			  };
-			
-			var sub=client.subscribe(subscribeHeaders, function(error, message) {
+	socket.on('privateMessage',({rid,sid,msg,time})=>{
+		if(rid!=="" &&sid!=="" &&msg!==""){
+			manager.connect((err,client,reconnect)=>{
+				if(err) throw new Error(err);
+				client.on('error',(err)=>{
+					reconnect();
+				})
+				const subscribeHeaders = {
+					'destination': 'test',
+					'ack': 'client-individual'
+				  };
 				
-				if (error) {
-				  console.log('subscribe error ' + error.message);
-				  return;
-				}
-				message.readString('utf-8', function(error, body) {
+				var sub=client.subscribe(subscribeHeaders, function(error, message) {
+					
+					if (error) {
+					  console.log('subscribe error ' + error.message);
+					  return;
+					}
+					message.readString('utf-8', function(error, body) {
+					  
+					  if (error) {
+						console.log('read message error ' + error.message);
+						return;
+					  }
+					  userMessage.find({$or:[{_id:sid},{_id:rid}]}).then(data=>{
+						data.forEach(async element => {
+								element.chats.push(JSON.parse(body))
+								await element.save()
+							});
+					  })
+					  socket.to(rid).to(sid).emit('push',body);
+					  client.ack(message);
+					  sub.unsubscribe();
+					  client.disconnect();
+					});
+				  });
 				  
-				  if (error) {
-					console.log('read message error ' + error.message);
-					return;
-				  }
-				  socket.to(rid).to(sid).emit('push',body);
-				  client.ack(message);
-				  sub.unsubscribe();
-				  client.disconnect();
-				});
-			  });
-			  
-			  const sendHeaders = {
-				'destination': 'test',
-				'content-type': 'text/plain'
-			  };
-			  
-			  const frame = client.send(sendHeaders);
-			  frame.write(JSON.stringify({rid:rid,sid:sid,msg:msg}));
-			  frame.end()
-	
-		})
+				  const sendHeaders = {
+					'destination': 'test',
+					'content-type': 'text/plain'
+				  };
+				  
+				  const frame = client.send(sendHeaders);
+				  frame.write(JSON.stringify({rid:rid,sid:sid,msg:msg,time:time}));
+				  frame.end()
+		
+			})
+		
+		
+		}
+		
 		
 		
 		// var subscription=client.subscribe('/queue/test',(msg)=>{

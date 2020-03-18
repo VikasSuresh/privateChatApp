@@ -6,11 +6,16 @@ const mongoose=require('mongoose');
 const passport=require('passport');
 const bodyParser=require('body-parser')
 const config=require('config');
+const cookieParser=require('cookie-parser');
 
-app.use(cors());
+app.use(cookieParser())
+app.use(cors({
+    credentials:true,
+    origin: 'http://localhost:3000'
+}));
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
-mongoose.connect(process.env.db||config.get('db'),{useNewUrlParser:true,useUnifiedTopology:true})
+mongoose.connect(process.env.db||config.get('db'),{useNewUrlParser:true,useUnifiedTopology:true, useFindAndModify: false })
     .then(()=>{console.log('Connected to the DB')})
     .catch((err)=>{console.log('Error in Connecting to DB',err)})
 
