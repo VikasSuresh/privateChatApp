@@ -11,7 +11,7 @@ const cookieParser=require('cookie-parser');
 app.use(cookieParser())
 app.use(cors({
     credentials:true,
-    origin: 'http://localhost:3000'
+    origin: 'https://pcaclient.herokuapp.com/'
 }));
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
