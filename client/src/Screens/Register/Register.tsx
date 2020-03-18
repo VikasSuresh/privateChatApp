@@ -31,7 +31,6 @@ class Register extends React.Component<any,any>{
             if(data===true){
                 this.props.history.push('/login')
             }else{
-                console.log(data)
                 this.setState((prevState:any)=>{
                     return{
                         ...prevState,

@@ -1,5 +1,6 @@
 {
     "db":"db",
     "login":"login",
-    "password":"password"
+    "password":"password",
+    "client":"client"
 }
