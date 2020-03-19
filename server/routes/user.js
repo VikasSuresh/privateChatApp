@@ -65,7 +65,6 @@ router.post('/login',(req,res)=>{
                                 result.save()
                             }
                         })
-                        console.log(process.env.client)
                         res.cookie('token',token,{domain:process.env.client,sameSite:"none",secure}).send({
                             success:true
                         })
