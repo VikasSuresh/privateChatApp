@@ -56,19 +56,19 @@ router.post('/login',(req,res)=>{
                         expiresIn: 31556926 // 1 year in seconds
                       },(err,token)=>{
                             userMessage.findById(user._id)
-                                .then(data=>{
-                                if(data===null){
-                                    var result= new userMessage({
-                                        _id:user._id,
-                                        chats:[]
-                                    })
-                                    result.save()
-                                }
-                            })
-                            res.cookie('token',token,{domain:process.env.client,sameSite:"none",secure})
-                            res.json({
-                                success:true,
-                            })
+                            .then(data=>{
+                            if(data===null){
+                                var result= new userMessage({
+                                    _id:user._id,
+                                    chats:[]
+                                })
+                                result.save()
+                            }
+                        })
+                        console.log(process.env.client)
+                        res.cookie('token',token,{domain:process.env.client,sameSite:"none",secure}).send({
+                            success:true
+                        })
                     })
                   }else {
                     return res.json({ password: "Password incorrect" });
