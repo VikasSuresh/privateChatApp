@@ -65,7 +65,7 @@ router.post('/login',(req,res)=>{
                                 result.save()
                             }
                         })
-                        res.cookie('token',token,{sameSite:"none",secure}).send({
+                        res.cookie('token',token,{sameSite:"none",secure:true}).send({
                             success:true
                         })
                     })
