@@ -9,7 +9,7 @@
 
 .sign {
     padding-top: 40px;
-    color: #8C55AA;
+    color: #337ab7;
     font-family: 'Ubuntu', sans-serif;
     font-weight: bold;
     font-size: 23px;
@@ -69,7 +69,7 @@ font-family: 'Ubuntu', sans-serif;
   cursor: pointer;
     border-radius: 5em;
     color: #fff;
-    background: linear-gradient(to right, #9C27B0, #E040FB);
+    background: linear-gradient(to right, #2d87d6, #4098e6);
     border: 0;
     padding-left: 40px;
     padding-right: 40px;
@@ -83,15 +83,10 @@ font-family: 'Ubuntu', sans-serif;
 
 .forgot {
     text-shadow: 0px 0px 3px rgba(117, 117, 117, 0.12);
-    color: rgb(223, 137, 238);
+    color: #1082e6;
     padding-top: 15px;
 }
 
-a {
-    text-shadow: 0px 0px 3px rgba(117, 117, 117, 0.12);
-    color: #E1BEE7;
-    text-decoration: none
-}
 
 @media (max-width: 600px) {
     .main {
