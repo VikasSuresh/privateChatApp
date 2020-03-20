@@ -4,7 +4,7 @@ const SideBar =(props:any)=>(
         <div className="users-container">
             <div>
                 Hi {props.currUser.name}
-                <button onClick ={props.logout}style={{float:"right",marginRight:"10px"}}>
+                <button className="btn-info" onClick ={props.logout}style={{float:"right",marginRight:"10px"}}>
                     Logout
                 </button>
             </div>
