@@ -55,18 +55,9 @@ router.post('/login',(req,res)=>{
                       jwt.sign({id:user._id,name:user.name},"secret",{
                         expiresIn: 31556926 // 1 year in seconds
                       },(err,token)=>{
-                            userMessage.findById(user._id)
-                            .then(data=>{
-                            if(data===null){
-                                var result= new userMessage({
-                                    _id:user._id,
-                                    chats:[]
-                                })
-                                result.save()
-                            }
-                        })
-                        res.cookie('token',token,{domain:process.env.client,sameSite:"none",secure:true}).send({
-                            success:true
+                        res.send({
+                            success:true,
+                            token:token
                         })
                     })
                   }else {

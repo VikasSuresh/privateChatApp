@@ -1,9 +1,8 @@
 import React from "react";
 import jwt from 'jsonwebtoken'
-import cookie from "js-cookie";
 class Home extends React.Component<any,any>{
     componentDidMount(){
-        let atrb:any=cookie.get('token')
+        let atrb:any=localStorage.getItem('token')//cookie.get('token')
         if(jwt.decode(atrb)){
             this.props.history.push('/chat')
         }

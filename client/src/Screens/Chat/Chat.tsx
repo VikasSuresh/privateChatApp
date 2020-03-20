@@ -4,7 +4,6 @@ import SideBar from "../../Components/SideBar";
 import Message from "../../Components/Message";
 import jwt from "jsonwebtoken";
 import Axios from "axios";
-import cookie from "js-cookie";
 
 class Chat extends React.Component<any,any>{
    state={
@@ -36,11 +35,11 @@ class Chat extends React.Component<any,any>{
     socket:io.connect(process.env.REACT_APP_API||'http://localhost:8000')
    }
    componentWillUnmount(){
-    
+    this.state.socket.close()
    }
    componentDidMount(){
         const {socket}=this.state;
-        var retrievedObject:any = cookie.get('token')
+        var retrievedObject:any = localStorage.getItem('token') //cookie.get('token')
             retrievedObject=(jwt.decode(retrievedObject));
             if(retrievedObject!==null){
                 Axios.get(`${process.env.REACT_APP_API}user/onMount/${retrievedObject.id}`).then(({data}:any)=>{
@@ -107,39 +106,23 @@ class Chat extends React.Component<any,any>{
             }
         })
         socket.on('connectedUsers',(users:any)=>{
-            this.setState({
-                users:users
+            this.setState((prevState:any)=>{
+                socket.emit('getOfflineMessage')
+                return{users:users}
             })
         })
-        socket.on('disconnect',()=>{
-            alert("Disconnected refresh to connect again")
+        socket.on('disconnect',()=>{ 
             window.location.reload()
         })
-        window.addEventListener('beforeunload',(e)=>{
-            e.preventDefault();
-            this.end()
-        })
-        // window.addEventListener('blur',()=>{
-        //    console.log('yo')
-        //     this.end()
-        // })
         this.setState({
             socket
         })
    }
-   end=()=>{
-    // Axios.post(`${process.env.REACT_APP_API}user/onUnmount`,{id:this.state.currUser.id ,chats:this.state.chats})
-    // .then(({data})=>{
-    //     console.log(data===true?"Logouted":"Some Prblem in Logging out")
-    // }).catch((err)=>{
-    //     console.log(err,"err")
-    // })
-   }
    logout=()=>{
        this.setState(()=>{
             this.state.socket.emit('logout',this.state.currUser); 
-            cookie.remove('token');
-            this.end()
+            localStorage.removeItem('token')
+            //cookie.remove('token');
             this.props.history.push('/login')
             return{
                 state:{}
@@ -158,26 +141,21 @@ class Chat extends React.Component<any,any>{
    }
 
    handleKeyPress=(e:any)=>{
-        if(e.key==="Enter" && this.state.users.map(u=>u.id).includes(this.state.recieverId)){this.submit(e)}
+        if(e.key==="Enter"){this.submit(e)}
    }
    submit=(e:any)=>{
        e.preventDefault();
-       if(this.state.users.map(u=>u.id).includes(this.state.recieverId)){
-           var time=`${new Date().getHours()}:${new Date().getMinutes()}`
-            this.setState((prevState:any)=>{
-                this.state.socket.emit('privateMessage',{rid:this.state.recieverId,sid:this.state.currUser.id,msg:this.state.msg,time:time})
-                return{
-                ...prevState,
-                msg:'',
-                chats:[
-                    ...prevState.chats,
-                    {sid:this.state.currUser.id,msg:this.state.msg,rid:this.state.recieverId,time:time}
-                ]}
-            })
-        }else{
-            alert("The User is Offline")
-        }
-       
+        var time=`${new Date().getHours()}:${new Date().getMinutes()}`
+        this.setState((prevState:any)=>{
+            this.state.socket.emit('privateMessage',{rid:this.state.recieverId,sid:this.state.currUser.id,msg:this.state.msg,time:time})
+            return{
+            ...prevState,
+            msg:'',
+            chats:[
+                ...prevState.chats,
+                {sid:this.state.currUser.id,msg:this.state.msg,rid:this.state.recieverId,time:time}
+            ]}
+        })
    }
    onUserClick=(e:any)=>{
         if(this.state.notify.filter(n=>n.id===e.target.value).length!==0){
@@ -234,7 +212,12 @@ class Chat extends React.Component<any,any>{
                                     }></span>
                                 </div>
                                 <p className="name-time">
-                                    <span className="name">{m.name}</span>                            
+                                    <span className="name">{m.name}</span>  
+                                    <span className="notification">{
+                                        this.state.notify.filter(n=>n.id===m._id).length!==0
+                                        ?this.state.notify.filter(n=>n.id===m._id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
+                                        :""
+                                    }</span>                          
                                 </p>                        
                                 </button>
                             </li> 
@@ -254,7 +237,12 @@ class Chat extends React.Component<any,any>{
                                     <span className="status online"></span>
                                 </div>
                                 <p className="name-time">
-                                    <span className="name">{m.name}</span>                            
+                                    <span className="name">{m.name}</span>        
+                                    <span className="notification">{
+                                        this.state.notify.filter(n=>n.id===m.id).length!==0
+                                        ?this.state.notify.filter(n=>n.id===m.id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
+                                        :""
+                                    }</span>                    
                                 </p>                        
                                 </button>
                             </li> 
@@ -270,7 +258,12 @@ class Chat extends React.Component<any,any>{
                                     <span className="status online"></span>
                                 </div>
                                 <p className="name-time">
-                                    <span className="name">{m.name}</span>                            
+                                    <span className="name">{m.name}</span>
+                                    <span className="notification">{
+                                        this.state.notify.filter(n=>n.id===m.id).length!==0
+                                        ?this.state.notify.filter(n=>n.id===m.id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
+                                        :""
+                                    }</span>                       
                                 </p>                        
                                 </button>
                             </li> 

@@ -1,6 +1,7 @@
 const io = require('./index.js').io
 const Stomp=require('stompit');
 const userMessage=require('./models/userMessage')
+const offlineMessage=require('./models/offlineMessage')
 
 const connectOptions = {
 	  'host': 'b-1b0765e1-971b-403c-a003-742240f2bfc9-1.mq.ap-south-1.amazonaws.com',
@@ -19,6 +20,7 @@ const connectOptions = {
 	  });
 
 const users=[]
+var id,sent
 module.exports=(socket)=>{
 	socket.on('usersConnected',(data)=>{
 		if(data!==null){
@@ -35,13 +37,32 @@ module.exports=(socket)=>{
 				data.socketid=socket.id
 				users.push(data)
 				io.emit('connectedUsers',users);
+				id=data.id
+				sent=false
 			}
 		}
 	})
+	function sendOfflineMessage(id){
+		offlineMessage.findById(id)
+			.then(data=>{
+				if(data!==null && data.chats.length!==0){
+					if(sent===false){
+						data.chats.forEach(async d => {
+							await privateMessage(d.rid,d.sid,d.msg,d.time)
+						});
+						data.chats=[]
+						data.save()
+							.catch(err=>console.log(err))
+						}
+						sent=true
+					}		
+			})
+	}
+	socket.on('getOfflineMessage',()=>{
+		sendOfflineMessage(id)
+	})
 
-	
-
-	socket.on('privateMessage',({rid,sid,msg,time})=>{
+	function privateMessage(rid,sid,msg,time){
 		if(rid!=="" &&sid!=="" &&msg!==""){
 			manager.connect((err,client,reconnect)=>{
 				if(err) throw new Error(err);
@@ -60,21 +81,18 @@ module.exports=(socket)=>{
 					  return;
 					}
 					message.readString('utf-8', function(error, body) {
-					  
-					  if (error) {
-						console.log('read message error ' + error.message);
-						return;
-					  }
-					  userMessage.find({$or:[{_id:sid},{_id:rid}]}).then(data=>{
-						data.forEach(async element => {
-								element.chats.push(JSON.parse(body))
-								await element.save()
-							});
-					  })
-					  socket.to(rid).to(sid).emit('push',body);
-					  client.ack(message);
-					  sub.unsubscribe();
-					  client.disconnect();
+					  	if (error) {
+							console.log('read message error ' + error.message);
+							return;
+						  }
+						userMessage.updateOne({_id:rid},{$push:{chats:JSON.parse(body)}},{upsert:true})
+							.then(()=>{
+								socket.to(rid).emit('push',body);
+							})
+							.catch(err=>console.log(err))
+						client.ack(message);
+						sub.unsubscribe();
+						client.disconnect();
 					});
 				  });
 				  
@@ -86,20 +104,20 @@ module.exports=(socket)=>{
 				  const frame = client.send(sendHeaders);
 				  frame.write(JSON.stringify({rid:rid,sid:sid,msg:msg,time:time}));
 				  frame.end()
-		
 			})
-		
-		
 		}
-		
-		
-		
-		// var subscription=client.subscribe('/queue/test',(msg)=>{
-		// 	socket.to(rid).to(sid).emit('push',msg.body);
-		// 	subscription.unsubscribe();
-		// })
-		// console.log(client)
-		// client.send('/queue/test',{},JSON.stringify({rid:rid,sid:sid,msg:msg}))
+	}	
+
+	socket.on('privateMessage',({rid,sid,msg,time})=>{
+		userMessage.updateOne({_id:sid},{$push:{chats:{rid:rid,sid:sid,msg:msg,time:time}}},{upsert:true})
+			.then(()=>socket.to(sid).emit('push',JSON.stringify({rid:rid,sid:sid,msg:msg,time:time})))
+			.catch(err=>console.log(err))
+		if(users.map(m=>m.id).includes(rid)){
+			privateMessage(rid,sid,msg,time)
+		}else{
+			offlineMessage.updateOne({_id:rid},{$push:{chats:{rid:rid,sid:sid,msg:msg,time:time}}},{upsert:true})
+				.catch(err=>console.log(err))
+		}
 	});
 	
 	socket.on('disconnect',()=>{

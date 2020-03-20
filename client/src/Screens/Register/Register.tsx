@@ -2,10 +2,9 @@ import React from "react";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import { NavLink } from "react-router-dom";
-import cookie from "js-cookie";
 class Register extends React.Component<any,any>{
     componentDidMount(){
-        let atrb:any=cookie.get('token')
+        let atrb:any=localStorage.getItem('token')// cookie.get('token')
         if(jwt.decode(atrb)){
             this.props.history.push('/chat')
         }

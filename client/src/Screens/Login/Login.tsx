@@ -2,11 +2,10 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import Axios from "axios";
 import jwt from "jsonwebtoken";
-import cookie from "js-cookie";
 
 class Login extends React.Component<any,any>{
     componentDidMount(){
-        let atrb:any=cookie.get('token')
+        let atrb:any=localStorage.getItem('token')//cookie.get('token')
         if(jwt.decode(atrb)){
             this.props.history.push('/chat')
         }
@@ -42,7 +41,8 @@ class Login extends React.Component<any,any>{
         })
         .then(({data})=>{
             if(data.success){
-                this.props.history.push(`/chat/`)
+                localStorage.setItem('token',data.token)
+                this.props.history.push(`/chat`)
             }else{
                 this.setState((prevState:any)=>{
                     return{
