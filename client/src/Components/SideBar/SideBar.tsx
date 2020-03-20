@@ -9,13 +9,8 @@ const SideBar =(props:any)=>(
                 </button>
             </div>
             <div className="chat-search-box">
-                <div className="input-group">
+                <div>
                     <input className="form-control" type="text" onChange={props.handleSearchText} placeholder="Search"/>
-                    <div className="input-group-btn">
-                        <button type="button" className="btn btn-info">
-                            Search
-                        </button>
-                    </div>
                 </div>
             </div>
             <div>

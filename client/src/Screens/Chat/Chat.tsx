@@ -22,7 +22,7 @@ class Chat extends React.Component<any,any>{
     }],
     prevUsers:[{
         _id:'',
-        username:'',
+        name:''
     }],
     recieverId:'',
     msg:'',
@@ -84,7 +84,9 @@ class Chat extends React.Component<any,any>{
                         ...prevState.chats,
                         {sid:sid,msg:msg,rid:rid,time:time}
                     ]
-                }))
+                }),()=>{
+                    this.settingPrevUsers(sid)
+                })
             }else if(sid!==this.state.recieverId && this.state.notify.filter(m=>m.id!=="").map(m=>m.id).includes(sid)){
                 this.setState((prevState:any)=>({
                     ...prevState,
@@ -93,7 +95,9 @@ class Chat extends React.Component<any,any>{
                         ...prevState.chats,
                         {sid:sid,msg:msg,rid:rid,time:time}
                     ]
-                }))
+                }),()=>{
+                    this.settingPrevUsers(sid)
+                })
             }
             else{
                 this.setState((prevState:any)=>({
@@ -102,7 +106,9 @@ class Chat extends React.Component<any,any>{
                         ...prevState.chats,
                         {sid:sid,msg:msg,rid:rid,time:time}
                     ]
-                }))
+                }),()=>{
+                    this.settingPrevUsers(sid)
+                })
             }
         })
         socket.on('connectedUsers',(users:any)=>{
@@ -117,6 +123,17 @@ class Chat extends React.Component<any,any>{
         this.setState({
             socket
         })
+   }
+   settingPrevUsers=(id:any)=>{
+    if(!(this.state.prevUsers.map(pu=>pu._id).includes(id)) && id!==this.state.currUser.id){
+        this.setState((prevState:any)=>({
+            ...prevState,
+            prevUsers:[
+                ...prevState.prevUsers,
+                this.state.users.filter(u=>u.id===id).map(u=>{return{_id:u.id,name:u.name}})[0]
+                ]
+            }))
+        }
    }
    logout=()=>{
        this.setState(()=>{
@@ -155,6 +172,8 @@ class Chat extends React.Component<any,any>{
                 ...prevState.chats,
                 {sid:this.state.currUser.id,msg:this.state.msg,rid:this.state.recieverId,time:time}
             ]}
+        },()=>{
+            this.settingPrevUsers(this.state.recieverId)
         })
    }
    onUserClick=(e:any)=>{
@@ -176,101 +195,102 @@ class Chat extends React.Component<any,any>{
         }
    }
     render(){
-            let prevUsers:any=this.state.prevUsers.map((m:any,index:any)=>{
-                if(this.state.search===""){
-                    if(m._id!==""){
-                        return(    
-                            <li className="person" data-chat="person" key={index} >
-                                <button className="userButton" onClick={this.onUserClick} value={m._id}>
-                                <div className="user">
-                                    <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
-                                    <span className={
-                                        this.state.users.map(u=>u.id).includes(m._id)?"status online":"status offline"
-                                    }></span>
-                                </div>
-                                <p className="name-time">
-                                    <span className="name">{m.name}</span>  
-                                    <span className="notification">{
-                                        this.state.notify.filter(n=>n.id===m._id).length!==0
-                                        ?this.state.notify.filter(n=>n.id===m._id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
-                                        :""
-                                    }</span>                          
-                                </p>                        
-                                </button>
-                            </li> 
-                        )
-                    }
-                }else{
-                    if(m._id!=="" && m.username.startsWith(this.state.search)){
-                        return(    
-                            <li className="person" data-chat="person" key={index} >
-                                <button className="userButton" onClick={this.onUserClick} value={m._id}>
-                                <div className="user">
-                                    <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
-                                    <span className={
-                                        this.state.users.map(u=>u.id).includes(m._id)?"status online":"status offline"
-                                    }></span>
-                                </div>
-                                <p className="name-time">
-                                    <span className="name">{m.name}</span>  
-                                    <span className="notification">{
-                                        this.state.notify.filter(n=>n.id===m._id).length!==0
-                                        ?this.state.notify.filter(n=>n.id===m._id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
-                                        :""
-                                    }</span>                          
-                                </p>                        
-                                </button>
-                            </li> 
-                        )
-                    }
+        let regex=new RegExp(`^${this.state.search}`,'i')
+        let prevUsers:any=this.state.prevUsers.map((m:any,index:any)=>{
+            if(this.state.search===""){
+                if(m._id!==""){
+                    return(    
+                        <li className="person" data-chat="person" key={index} >
+                            <button className="userButton" onClick={this.onUserClick} value={m._id}>
+                            <div className="user">
+                                <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
+                                <span className={
+                                    this.state.users.map(u=>u.id).includes(m._id)?"status online":"status offline"
+                                }></span>
+                            </div>
+                            <p className="name-time">
+                                <span className="name">{m.name}</span>  
+                                <span className="notification">{
+                                    this.state.notify.filter(n=>n.id===m._id).length!==0
+                                    ?this.state.notify.filter(n=>n.id===m._id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
+                                    :""
+                                }</span>                          
+                            </p>                        
+                            </button>
+                        </li> 
+                    )
                 }
-                
-            })
-            let renderUser:any=this.state.users.map((m:any,index:any)=>{
-                if(this.state.search===""){
-                    if(m.id!==this.state.currUser.id && m.id!=="" && !(this.state.prevUsers.map(u=>u._id).includes(m.id))){
-                        return (    
-                            <li className="person" data-chat="person" key={index} >
-                                <button className="userButton" onClick={this.onUserClick} value={m.id}>
-                                <div className="user">
-                                    <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
-                                    <span className="status online"></span>
-                                </div>
-                                <p className="name-time">
-                                    <span className="name">{m.name}</span>        
-                                    <span className="notification">{
-                                        this.state.notify.filter(n=>n.id===m.id).length!==0
-                                        ?this.state.notify.filter(n=>n.id===m.id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
-                                        :""
-                                    }</span>                    
-                                </p>                        
-                                </button>
-                            </li> 
-                        )
-                    }
-                }else{
-                    if(m.id!==this.state.currUser.id && m.id!=="" && !(this.state.prevUsers.map(u=>u._id).includes(m.id)) && m.name.startsWith(this.state.search) ){
-                        return (    
-                            <li className="person" data-chat="person" key={index} >
-                                <button className="userButton" onClick={this.onUserClick} value={m.id}>
-                                <div className="user">
-                                    <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
-                                    <span className="status online"></span>
-                                </div>
-                                <p className="name-time">
-                                    <span className="name">{m.name}</span>
-                                    <span className="notification">{
-                                        this.state.notify.filter(n=>n.id===m.id).length!==0
-                                        ?this.state.notify.filter(n=>n.id===m.id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
-                                        :""
-                                    }</span>                       
-                                </p>                        
-                                </button>
-                            </li> 
-                        )
-                    }
+            }else{
+                if(m._id!=="" && regex.test(m.name)){
+                    return(    
+                        <li className="person" data-chat="person" key={index} >
+                            <button className="userButton" onClick={this.onUserClick} value={m._id}>
+                            <div className="user">
+                                <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
+                                <span className={
+                                    this.state.users.map(u=>u.id).includes(m._id)?"status online":"status offline"
+                                }></span>
+                            </div>
+                            <p className="name-time">
+                                <span className="name">{m.name}</span>  
+                                <span className="notification">{
+                                    this.state.notify.filter(n=>n.id===m._id).length!==0
+                                    ?this.state.notify.filter(n=>n.id===m._id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
+                                    :""
+                                }</span>                          
+                            </p>                        
+                            </button>
+                        </li> 
+                    )
                 }
-            })
+            }
+            
+        })
+        let renderUser:any=this.state.users.map((m:any,index:any)=>{
+            if(this.state.search===""){
+                if(m.id!==this.state.currUser.id && m.id!=="" && !(this.state.prevUsers.map(u=>u._id).includes(m.id))){
+                    return (    
+                        <li className="person" data-chat="person" key={index} >
+                            <button className="userButton" onClick={this.onUserClick} value={m.id}>
+                            <div className="user">
+                                <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
+                                <span className="status online"></span>
+                            </div>
+                            <p className="name-time">
+                                <span className="name">{m.name}</span>        
+                                <span className="notification">{
+                                    this.state.notify.filter(n=>n.id===m.id).length!==0
+                                    ?this.state.notify.filter(n=>n.id===m.id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
+                                    :""
+                                }</span>                    
+                            </p>                        
+                            </button>
+                        </li> 
+                    )
+                }
+            }else{
+                if(m.id!==this.state.currUser.id && m.id!=="" && !(this.state.prevUsers.map(u=>u._id).includes(m.id)) && regex.test(m.name) ){
+                    return (    
+                        <li className="person" data-chat="person" key={index} >
+                            <button className="userButton" onClick={this.onUserClick} value={m.id}>
+                            <div className="user">
+                                <img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="User" />
+                                <span className="status online"></span>
+                            </div>
+                            <p className="name-time">
+                                <span className="name">{m.name}</span>
+                                <span className="notification">{
+                                    this.state.notify.filter(n=>n.id===m.id).length!==0
+                                    ?this.state.notify.filter(n=>n.id===m.id)[0].notify===true?<img src="https://img.icons8.com/android/18/000000/appointment-reminders.png"alt="notfication" />:""
+                                    :""
+                                }</span>                       
+                            </p>                        
+                            </button>
+                        </li> 
+                    )
+                }
+            }
+        })
 
         let renderMsg:any=this.state.chats.map((m:any,index:any)=>{
             if(m.sid===this.state.recieverId && m.sid!==""){
@@ -282,7 +302,7 @@ class Chat extends React.Component<any,any>{
                         </figure>
                         <div className="single-message">
                             <div className="chat-name">
-                                <h5>{this.state.prevUsers.filter(u=>u._id===m.sid).map(m=>m.username)}</h5>
+                                <h5>{this.state.prevUsers.filter(u=>u._id===m.sid).map(m=>m.name)}</h5>
                                 <time>{m.time}</time>
                             </div>
                             <p>
@@ -327,7 +347,7 @@ class Chat extends React.Component<any,any>{
                             ?
                             this.state.users.filter(u=>u.id===this.state.recieverId).map(m=>m.name)
                             :
-                            this.state.prevUsers.filter(u=>u._id===this.state.recieverId).map(m=>m.username)
+                            this.state.prevUsers.filter(u=>u._id===this.state.recieverId).map(m=>m.name)
                         }
                         handleText={this.handleText}
                         submit={this.submit}/>
