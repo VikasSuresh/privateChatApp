@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import { NavLink } from "react-router-dom";
+import './Register.css';
 class Register extends React.Component<any,any>{
     componentDidMount(){
         let atrb:any=localStorage.getItem('token')// cookie.get('token')
@@ -59,22 +60,22 @@ class Register extends React.Component<any,any>{
 
     render(){
         return(
-            <div>
-                <form onSubmit={this.submit}>
-                    <label>Name</label> <input onChange={this.handleChange} name="name" type='text' /> <br/>
-                    <div className='text-danger' id='name-err'>{this.state.err.name} </div>
-                    <label>UserName</label> <input onChange={this.handleChange} name="username" type='text' /> <br/>
-                    <div className='text-danger' id='uname-err'>{this.state.err.username} </div>
-                    <label>Pwd</label> <input onChange={this.handleChange} name="password" type='password' /> <br/>
-                    <div className='text-danger' id='pwd-err'>{this.state.err.password} </div>
-                    <label>ConfirmPwd</label> <input onChange={this.handleChange} name="confirmpwd" type='password' /> <br/>
-                    <div className='text-danger' id='cpwd-err'> {this.state.err.confirmpwd} </div>
-                    <button type="submit">
+            <div className="main">
+               <p className="sign" style={{textAlign:"center"}} >Register</p>
+                <form className="form1" onSubmit={this.submit}>
+                    <input className="un" onChange={this.handleChange}  placeholder="Name" name="name" type='text' />
+                    <div className='text-danger' style={{textAlign:"center"}} id='name-err'>{this.state.err.name} </div>
+                    <input className="un" onChange={this.handleChange} placeholder="User Name" name="username" type='text' /> 
+                    <div className='text-danger' style={{textAlign:"center"}} id='uname-err'>{this.state.err.username} </div>
+                    <input className="pass" onChange={this.handleChange} placeholder="Password" name="password" type='password' /> 
+                    <div className='text-danger' style={{textAlign:"center"}} id='pwd-err'>{this.state.err.password} </div>
+                    <input className="pass" onChange={this.handleChange} placeholder="Confirm Password" name="confirmpwd" type='password' /> 
+                    <div className='text-danger' style={{textAlign:"center"}} id='cpwd-err'> {this.state.err.confirmpwd} </div>
+                    <button className="submit" type="submit">
                         Submit
                     </button>
-                    <div>
-                        Have an Acc
-                    <NavLink to='/login'>
+                    <div style={{textAlign:"center",paddingTop:"15px",paddingBottom:'5px'}} >
+                    <NavLink className="forgot"  to='/login'>
                         Login    
                     </NavLink>
                     </div>

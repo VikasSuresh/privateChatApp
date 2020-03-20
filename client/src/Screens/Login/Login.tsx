@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import Axios from "axios";
 import jwt from "jsonwebtoken";
+import './Login.css'
 
 class Login extends React.Component<any,any>{
     componentDidMount(){
@@ -57,26 +58,19 @@ class Login extends React.Component<any,any>{
     }
     render(){
         return(
-            <div>
-                <form onSubmit={this.submit}>
-                    <label>
-                        User Name
-                    </label>
-                    <input type='text' onChange={this.handleChange} name="username" /><br/>
-                    <div className="text-danger">{this.state.err.username}</div>
-                    <label>
-                       Password
-                    </label>
-                    <input type='password' onChange={this.handleChange} name="password" /><br/>
-                    <div className="text-danger">{this.state.err.password}</div>
-                    <button type='submit'>Submit</button>
-                    <div>
-                        Dont have an Acc
-                    <NavLink to='/register'>
-                        SignUp    
-                    </NavLink>
+            <div className="main">
+                <p className="sign" style={{textAlign:"center"}} >Sign in</p>
+                <form className="form1" onSubmit={this.submit}>
+                    <input className="un" type='text' onChange={this.handleChange} placeholder="User Name" name="username" />
+                    <div className="text-danger" style={{textAlign:"center"}}>{this.state.err.username}</div>
+                    <input className="pass" type='password' onChange={this.handleChange} placeholder="Password" name="password" />
+                    <div className="text-danger" style={{textAlign:"center"}} >{this.state.err.password}</div>
+                    <button className="submit" type='submit'>Sign in</button>
+                    <div style={{textAlign:"center",paddingTop:"15px",paddingBottom:'5px'}}>
+                            <NavLink className="forgot" to='/register'>
+                                Sign up    
+                            </NavLink>
                     </div>
-                   
                 </form>
             </div>
         )

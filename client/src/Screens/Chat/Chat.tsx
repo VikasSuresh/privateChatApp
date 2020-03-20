@@ -351,7 +351,7 @@ class Chat extends React.Component<any,any>{
                         }
                         handleText={this.handleText}
                         submit={this.submit}/>
-                        :<div>Select A Person a Text</div>
+                        :<div style={{height:"100vh",display:"flex",justifyContent:"center",alignItems:"center",fontSize:'25px' }}>Select a Person to Chat</div>
                     }
                     </div>
                 </div>
