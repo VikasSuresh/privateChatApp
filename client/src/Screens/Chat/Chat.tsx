@@ -4,6 +4,7 @@ import SideBar from "../../Components/SideBar";
 import Message from "../../Components/Message";
 import jwt from "jsonwebtoken";
 import Axios from "axios";
+import  {animateScroll} from "react-scroll";
 
 class Chat extends React.Component<any,any>{
    state={
@@ -37,8 +38,10 @@ class Chat extends React.Component<any,any>{
    componentWillUnmount(){
     this.state.socket.close()
    }
+   
    componentDidMount(){
         const {socket}=this.state;
+        var temp:any=localStorage.getItem('token');
         var retrievedObject:any = localStorage.getItem('token') //cookie.get('token')
             retrievedObject=(jwt.decode(retrievedObject));
             if(retrievedObject!==null){
@@ -85,6 +88,7 @@ class Chat extends React.Component<any,any>{
                         {sid:sid,msg:msg,rid:rid,time:time}
                     ]
                 }),()=>{
+                    this.scrollToBottom()
                     this.settingPrevUsers(sid)
                 })
             }else if(sid!==this.state.recieverId && this.state.notify.filter(m=>m.id!=="").map(m=>m.id).includes(sid)){
@@ -96,6 +100,7 @@ class Chat extends React.Component<any,any>{
                         {sid:sid,msg:msg,rid:rid,time:time}
                     ]
                 }),()=>{
+                    this.scrollToBottom()
                     this.settingPrevUsers(sid)
                 })
             }
@@ -107,6 +112,7 @@ class Chat extends React.Component<any,any>{
                         {sid:sid,msg:msg,rid:rid,time:time}
                     ]
                 }),()=>{
+                    this.scrollToBottom()
                     this.settingPrevUsers(sid)
                 })
             }
@@ -123,7 +129,20 @@ class Chat extends React.Component<any,any>{
         this.setState({
             socket
         })
-   }
+        window.addEventListener("storage",()=>{
+            if(temp!==localStorage.getItem('token')){
+                this.logout()
+            }
+        })
+    }
+   
+    scrollToBottom(){
+        animateScroll.scrollToBottom({
+            duration:0,
+            containerId:"chat-box"
+        })
+    }
+
    settingPrevUsers=(id:any)=>{
     if(!(this.state.prevUsers.map(pu=>pu._id).includes(id)) && id!==this.state.currUser.id){
         this.setState((prevState:any)=>({
@@ -173,6 +192,7 @@ class Chat extends React.Component<any,any>{
                 {sid:this.state.currUser.id,msg:this.state.msg,rid:this.state.recieverId,time:time}
             ]}
         },()=>{
+            this.scrollToBottom()
             this.settingPrevUsers(this.state.recieverId)
         })
    }
@@ -187,11 +207,11 @@ class Chat extends React.Component<any,any>{
             this.setState({
                 notify:x,
                 recieverId:e.target.value
-            })
+            },this.scrollToBottom)
         }else{
             this.setState({
                 recieverId:e.target.value
-            })
+            },this.scrollToBottom)
         }
    }
     render(){
