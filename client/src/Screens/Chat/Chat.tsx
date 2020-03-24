@@ -214,8 +214,15 @@ class Chat extends React.Component<any,any>{
             },this.scrollToBottom)
         }
    }
+   isAlphaNumeric=(str:any)=>{
+        if (new RegExp('^[a-z0-9]+$','i').test(this.state.search)){
+            let regex=new RegExp(`^${this.state.search}`,'i').test(str)
+            return regex;
+        }else{
+            return true;
+        }
+   }
     render(){
-        let regex=new RegExp(`^${this.state.search}`,'i')
         let prevUsers:any=this.state.prevUsers.map((m:any,index:any)=>{
             if(this.state.search===""){
                 if(m._id!==""){
@@ -241,7 +248,7 @@ class Chat extends React.Component<any,any>{
                     )
                 }
             }else{
-                if(m._id!=="" && regex.test(m.name)){
+                if(m._id!=="" && this.isAlphaNumeric(m.name)){
                     return(    
                         <li className="person" data-chat="person" key={index} >
                             <button className="userButton" onClick={this.onUserClick} value={m._id}>
@@ -289,7 +296,7 @@ class Chat extends React.Component<any,any>{
                     )
                 }
             }else{
-                if(m.id!==this.state.currUser.id && m.id!=="" && !(this.state.prevUsers.map(u=>u._id).includes(m.id)) && regex.test(m.name) ){
+                if(m.id!==this.state.currUser.id && m.id!=="" && !(this.state.prevUsers.map(u=>u._id).includes(m.id)) && this.isAlphaNumeric(m.name) ){
                     return (    
                         <li className="person" data-chat="person" key={index} >
                             <button className="userButton" onClick={this.onUserClick} value={m.id}>
